@@ -33,6 +33,11 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+# resource "aws_iam_role_policy_attachment" "aws_loadbalancer_controller_iam" {
+#   role       = aws_iam_role.nodes_general.name
+#   policy_arn = aws_iam_policy.aws_loadbalancer_controller_policy.arn
+# }
+
 resource "aws_eks_node_group" "nodes_general" {
   cluster_name    = aws_eks_cluster.eks.name
   node_group_name = "nodes-general"
@@ -43,9 +48,9 @@ resource "aws_eks_node_group" "nodes_general" {
   ]
 
   scaling_config {
-    desired_size = 1
-    max_size     = 1
-    min_size     = 1
+    desired_size = 2
+    max_size     = 3
+    min_size     = 2
   }
 
   ami_type = "AL2_x86_64"
@@ -56,6 +61,7 @@ resource "aws_eks_node_group" "nodes_general" {
 
   force_update_version = false
 
+#Important because instance type affect max pods pr
   instance_types = ["t3.small"]
 
   labels = {
@@ -72,5 +78,6 @@ resource "aws_eks_node_group" "nodes_general" {
     aws_iam_role_policy_attachment.amazon_eks_worker_node_policy_general,
     aws_iam_role_policy_attachment.amazon_eks_cni_policy_general,
     aws_iam_role_policy_attachment.amazon_ec2_container_registry_read_only,
+#    aws_iam_role_policy_attachment.aws_loadbalancer_controller_iam,
   ]
 }
